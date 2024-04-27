@@ -1,6 +1,7 @@
 let config =  require("./config.js");
 let lang = null;
 const {generateInlineWallets , askForWalletAddress} = require("./wallets.js");
+const {askForBuySc , topup} = require("./topup.js");
 
 const langD = (name) => {
     if(!lang[name] && !config[name]) return "<???>";
@@ -47,15 +48,21 @@ if (_lang) lang = _lang;
     bot.on('callback_query', (ctx) => {
         const query = ctx.callbackQuery.data;
         if (query.startsWith('wallet_')) {
-            const wallet = query.slice(7);
+            const wallet = query.replace("wallet_" , "");
         
             ctx.reply(`Seleccionaste la billetera: ${wallet}`);
             askForWalletAddress(ctx, wallet);
+        }else if (query.startsWith('topup_')) {
+            const wallet = query.replace("topup_");
+        
+            ctx.reply(`Cargando recarga mediante : ${wallet}`);
+            askForBuySc(ctx, wallet);
         }
     });
 
     bot.on('message', async (ctx) => {
         const walletName = ctx.session.walletName;
+        const topupMode = ctx.session.topupMode;
         const userId = ctx.message.from.id;
         if (walletName && ctx.message.text) {
             const walletAddress = ctx.message.text;
@@ -63,6 +70,17 @@ if (_lang) lang = _lang;
             
             if(changeWallet.status == "SUCCESS") ctx.reply(`Dirección de la billetera ${walletName} guardada con éxito`);
             else ctx.reply(`ERROR  ${walletName} : ${changeWallet.message}`);
+            ctx.session = {}; 
+        }
+        if (topupMode && ctx.message.text) {
+            const amountInUsd = ctx.message.text;
+            try{
+                amountInUsd = parseFloat(amountInUsd);
+            }catch(err){
+                await ctx.reply("Inserte un numero valido");
+                return;
+            }
+            topup(ctx , topupMode , amountInUsd);
             ctx.session = {}; 
         }
     });

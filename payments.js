@@ -34,7 +34,7 @@ if (_lang) lang = _lang;
                 generateInlineWallets(ctx , "topup");
                 break;
             case langD("WITHDRAW_NAME"):
-                
+                generateInlineWallets(ctx , "withdraw");
                 break;
             case langD("WALLETS_NAME"):
                 generateInlineWallets(ctx , "wallet");
@@ -53,10 +53,15 @@ if (_lang) lang = _lang;
             ctx.reply(`Seleccionaste la billetera: ${wallet}`);
             askForWalletAddress(ctx, wallet);
         }else if (query.startsWith('topup_')) {
-            const wallet = query.replace("topup_");
+            const wallet = query.replace("topup_" , "");
         
             ctx.reply(`Cargando recarga mediante : ${wallet}`);
             askForBuySc(ctx, wallet);
+        }else if (query.startsWith('withdraw_')) {
+            const wallet = query.replace("withdraw_" , "");
+        
+            ctx.reply(`Cargando retiro mediante : ${wallet}`);
+            askForWithdraw(ctx, wallet);
         }
     });
 
@@ -73,7 +78,7 @@ if (_lang) lang = _lang;
             ctx.session = {}; 
         }
         if (topupMode && ctx.message.text) {
-            const amountInUsd = ctx.message.text;
+            let amountInUsd = ctx.message.text;
             try{
                 amountInUsd = parseFloat(amountInUsd);
             }catch(err){

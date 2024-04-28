@@ -17,7 +17,21 @@ const withdraw = async (ctx, api_client , withdrawMode , amountInUsd) => {
 
     }else{
         const payment = await cryptoPayClient.withdraw(userId , withdrawMode , amountInUsd);
-        if(payment.status == "success")
+        if(payment.status == "success"){
+            ctx.reply(`Retiro exitoso:
+            ID de la transaccion : ${payment.transaction_id}
+            Monto: ${payment.amount}
+            Metodo: ${payment.currency}
+            Direccion: ${payment.address}
+            Fecha: ${payment.timestamp}
+            "${payment.message}`);
+        }else if(payment.status == "pending"){
+            ctx.reply(`El pago sera acreditado en breve.
+            ${payment.message}`);
+        }else if(payment.status == "failed"){
+            ctx.reply(`El pago fallo ,revise si tiene fondos suficientes o si su billetera tiene la direccion correcta.
+            ${payment.message}`);
+        }
     }
 }
 

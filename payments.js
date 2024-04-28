@@ -10,18 +10,18 @@ const langD = (name) => {
 
 const payments = async (bot , api_client ,  _lang = null ) => {
 if (_lang) lang = _lang;
-    bot.on(langD(MAIN_MENU_NAME), async (ctx) => {
+    bot.hears(langD("MAIN_MENU_NAME"), async (ctx) => {
         const userId = ctx.message.from.id;
         const message = ctx.message.text;
         const userData = await api_client.getUserData(userId);
         //mostrar balance bla bla bla
-        ctx.reply(langD(MAIN_MENU_DESC),
+        ctx.reply(langD("MAIN_MENU_DESC"),
             {
                 reply_markup: {
                     keyboard: [
-                        [langD(TOP_UP_NAME)],
-                        [langD(WITHDRAW_NAME)],
-                        [langD(WALLETS_NAME)]
+                        [langD("TOP_UP_NAME")],
+                        [langD("WITHDRAW_NAME")],
+                        [langD("WALLETS_NAME")]
                     ],
                     resize_keyboard: true,
                     one_time_keyboard: true
